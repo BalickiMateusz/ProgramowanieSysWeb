@@ -1,14 +1,17 @@
 package com.example.sklepinternetowysysweb.data.model;
 
 import jakarta.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity
 @Table(name = "\"Cart\"")
 public class Cart {
     @Id
     @Column(name = "cart_id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "total_price")
@@ -17,7 +20,7 @@ public class Cart {
     @Column(name = "total_weight")
     private Float totalWeight;
 
-    @NotNull
+    @NotNull(message = "Can not be empty!")
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -43,7 +46,10 @@ public class Cart {
     }
 
     public void setTotalPrice(Float totalPrice) {
-        this.totalPrice = totalPrice;
+        this.totalPrice =  BigDecimal.valueOf(totalPrice)
+                .setScale(2, BigDecimal.ROUND_HALF_DOWN)
+                .floatValue();
+
     }
 
     public Float getTotalWeight() {
@@ -51,7 +57,9 @@ public class Cart {
     }
 
     public void setTotalWeight(Float totalWeight) {
-        this.totalWeight = totalWeight;
+        this.totalWeight = BigDecimal.valueOf(totalWeight)
+                .setScale(2, BigDecimal.ROUND_HALF_DOWN)
+                .floatValue();
     }
 
 }

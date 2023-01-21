@@ -1,24 +1,29 @@
 package com.example.sklepinternetowysysweb.controllers;
+import com.example.sklepinternetowysysweb.data.model.Cart;
 import com.example.sklepinternetowysysweb.data.model.Product;
 import com.example.sklepinternetowysysweb.data.model.User;
 import com.example.sklepinternetowysysweb.persistance.UserRepository;
 import com.example.sklepinternetowysysweb.service.UserService;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.validation.Valid;
 import java.security.Principal;
+import org.springframework.stereotype.Controller;
 
+import jakarta.validation.Valid;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@org.springframework.stereotype.Controller
-public class UserController {
+@Controller
+public class UserController implements WebMvcConfigurer {
 
     @Autowired
     private UserService userService;
@@ -31,22 +36,27 @@ public class UserController {
         User user = new User();
         model.addAttribute("user", user);
         return "register";
+
     }
 
     @PostMapping("/register/save")
-    public String saveUser(@ModelAttribute("user") @Valid User user,
-                                  BindingResult result, ModelMap model) {
+    public String saveUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model) {
 
+        System.out.println(user.toString());
         User existingUser = userService.findByEmailAddress(user.getEmailAddress());
 
         if(existingUser != null && existingUser.getEmailAddress() != null && !existingUser.getEmailAddress().isEmpty()){
-            result.rejectValue("emailAddress", null,
+            bindingResult.rejectValue("emailAddress", null,
                     "There is already an account registered with the same email");
         }
 
-
-        if(result.hasErrors()){
-            model.addAttribute("user", user);
+        if(!user.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")){
+            bindingResult.rejectValue("password", null,
+                    "Minimum eight characters, at least one letter and one number:");
+        };
+        System.out.println(bindingResult.getModel());
+        if(bindingResult.hasErrors()){
+//            model.addAttribute("user", user);
             return "register";
         }
 
@@ -80,20 +90,62 @@ public class UserController {
     }
 
     @PostMapping("/account/change")
-    public String changeAccount(@ModelAttribute("currentUser") User user,
+    public String changeAccount(@Valid @ModelAttribute("currentUser") User user,
                                 BindingResult result, ModelMap model, Principal principal) {
-        User originalUser = userRepository.findByEmailAddress(principal.getName());
-        if(user.getPassword().equals("Enter new password")){
-            System.out.println(originalUser.getEmailAddress()+ "ZOSTAJE STARE HASLO" + originalUser.getPassword());
-            user.setPassword(originalUser.getPassword());
-            userService.savePlain(user);
-            System.out.println("po robocie" + user.getPassword());
-            return "authenticated";
-        }else{
-            System.out.println(" NOWE HASLO" + user.getPassword());
-            userService.save(user);
-        }
 
-        return "authenticated";
+        User existingUser = userService.findByEmailAddress(user.getEmailAddress());
+
+            if(result.hasErrors()){
+//                model.addAttribute("currentUser", user);
+                return "account";
+            }else{
+
+
+            User originalUser = userRepository.findByEmailAddress(principal.getName());
+            Boolean flag = originalUser.getEmailAddress().equals(user.getEmailAddress());
+            if(user.getPassword().equals("Enter new password")){
+                user.setPassword(originalUser.getPassword());
+
+                if(flag){
+                    userService.savePlain(user);
+                    return "authenticated";
+                }else{
+
+                    if(existingUser != null && existingUser.getEmailAddress() != null && !existingUser.getEmailAddress().isEmpty()){
+                        result.rejectValue("emailAddress", null,
+                                "There is already an account registered with the same email");
+                    }
+
+                    if(result.hasErrors()){
+//                model.addAttribute("currentUser", user);
+                        return "account";
+                    }
+                    userService.savePlain(user);
+                    return "redirect:/logout";
+                }
+            }else{
+
+                if(!flag){
+                    if(existingUser != null && existingUser.getEmailAddress() != null && !existingUser.getEmailAddress().isEmpty()){
+                        result.rejectValue("emailAddress", null,
+                                "There is already an account registered with the same email");
+                    }
+                }
+
+
+                if(!user.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")){
+                    result.rejectValue("password", null,
+                            "Minimum eight characters, at least one letter and one number:");
+                };
+
+                if(result.hasErrors()){
+//                model.addAttribute("currentUser", user);
+                    return "account";
+                }
+
+                userService.save(user);
+            }
+            return "redirect:/logout";
+        }
     }
 }

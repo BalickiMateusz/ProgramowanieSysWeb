@@ -25,7 +25,6 @@ public class CustomLogoutHandler implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
                        Authentication authentication) {
-        System.out.println("KAKKAKA");
         User user = userService.findByEmailAddress(authentication.getName());
         Cart cart = cartService.findCartByUser(user);
 

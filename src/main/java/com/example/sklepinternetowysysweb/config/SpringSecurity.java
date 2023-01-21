@@ -31,15 +31,24 @@ public class SpringSecurity {
         return new BCryptPasswordEncoder();
     }
 
+    String[] staticResources  =  {
+            "/css/**",
+            "/images/**",
+            "/fonts/**",
+            "/scripts/**",
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/register/**").permitAll()
+                                .requestMatchers(staticResources).permitAll()
                                 .requestMatchers("/home").permitAll()
-                                .requestMatchers("/products/**").fullyAuthenticated()
                                 .requestMatchers("/WEB-INF/**").permitAll()
+                                .requestMatchers("/static/images/**").permitAll()
+                                .requestMatchers("/products/**").fullyAuthenticated()
                                 .anyRequest().fullyAuthenticated()
                 ).formLogin(
                         form -> form

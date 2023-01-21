@@ -2,6 +2,8 @@ package com.example.sklepinternetowysysweb.data.model;
 
 import jakarta.persistence.*;
 
+import jakarta.validation.constraints.*;
+
 @Entity
 @Table(name = "address")
 public class Address {
@@ -10,21 +12,39 @@ public class Address {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
 
+    @Pattern(message = "Wrong input provided!" , regexp ="[A-Za-z0-9'\\.\\-\\s\\,]+$")
+    @Size(min=1, max = 8, message="Wrong size, must be from 1 to 8 chars")
+    @NotNull(message="Can not be empty!")
     @Column(name = "house_number", length = 8)
     private String houseNumber;
 
+    @Pattern(message = "Wrong input provided!" , regexp ="[A-Za-z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð'\\.\\-\\s\\,]+$")
+    @Size(min = 1, max = 64, message="Wrong size, must be from 1 to 64 chars")
+    @NotNull(message="Can not be empty!")
     @Column(name = "street_name", nullable = false, length = 64)
     private String streetName;
 
+    @Pattern(message = "Wrong input provided!" , regexp ="[A-Za-z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð'\\.\\-\\s\\,]+$")
+    @Size(min = 1, max = 64, message="Wrong size, must be from 1 to 64 chars")
+    @NotNull(message="Can not be empty!")
     @Column(name = "city", nullable = false, length = 64)
     private String city;
 
+    @Pattern(message = "Wrong input provided!" , regexp ="[A-Za-z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð'\\.\\-\\s\\,]+$")
+    @Size(min = 1, max = 64, message="Wrong size, must be from 1 to 64 chars")
+    @NotNull(message="Can not be empty!")
     @Column(name = "state", nullable = false, length = 64)
     private String state;
 
+    @Pattern(message = "Wrong input provided!" , regexp = "(?i)^[a-z0-9][a-z0-9\\- ]{0,10}[a-z0-9]$")
+    @Size(min = 1, max = 16, message="Wrong size, must be from 1 to 16 chars")
+    @NotNull(message="Can not be empty!")
     @Column(name = "postal_code", nullable = false, length = 16)
     private String postalCode;
 
+    @Size(min = 4, max = 64, message="Wrong size, must be from 4 to 64 chars")
+    @Pattern(message = "Wrong input provided!" , regexp = "[a-zA-Z]{2,}")
+    @NotNull(message="Can not be empty!")
     @Column(name = "country", nullable = false, length = 64)
     private String country;
 

@@ -28,6 +28,17 @@ public class Supplier {
     @Column(name = "fax", length = 40)
     private String fax;
 
+    @Column(name = "delivery_price", nullable = true)
+    private Float deliveryPrice;
+
+    public Float getDeliveryPrice() {
+        return deliveryPrice;
+    }
+
+    public void setDeliveryPrice(Float deliveryPrice) {
+        this.deliveryPrice = deliveryPrice;
+    }
+
     public Integer getId() {
         return id;
     }

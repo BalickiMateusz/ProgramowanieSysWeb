@@ -44,7 +44,6 @@ public class ShoppingCartController {
 
         User user = userService.findByEmailAddress(principal.getName());
         Cart cart = cartService.findCartByUser(user);
-        System.out.println("LALALA"+product.toString());
         if(cart == null) {
             cart = new Cart();
             cart.setTotalWeight(0.0f);
@@ -86,7 +85,7 @@ public class ShoppingCartController {
         }
 
         if(oldQuantity == newQuantity){
-            return "success";
+            return String.valueOf(cart.getTotalPrice());
         }else {
             if (newQuantity == 0) {
                 cartItemService.deleteById(oldItem.getId());
@@ -98,7 +97,8 @@ public class ShoppingCartController {
             cart.setTotalWeight(cart.getTotalWeight() + cartItem.getProduct().getWeight() * (newQuantity - oldQuantity));
             cartService.save(cart);
         }
-        return "success";
+
+        return String.valueOf(cart.getTotalPrice());
     }
 
     @GetMapping("/cart")
@@ -122,6 +122,7 @@ public class ShoppingCartController {
 //            mapCartItems.put(products.get(i).getId(), cartItems.get(i).getQuantity());
 //        }
 
+        model.addAttribute("totalPrice", cart.getTotalPrice());
         model.addAttribute("mapCartItems", mapCartItems);
         model.addAttribute("products", products);
         model.addAttribute("quantity", new CartItem());

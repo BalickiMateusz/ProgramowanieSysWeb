@@ -1,6 +1,10 @@
 package com.example.sklepinternetowysysweb.data.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
@@ -12,10 +16,12 @@ public class Order {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull(message = "Please, choose a supplier!")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
+    @Valid
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
@@ -33,7 +39,7 @@ public class Order {
     @Column(name = "additional_remarks", length = 1024)
     private String additionalRemarks;
 
-    @Column(name = "delivery_date", nullable = false)
+    @Column(name = "delivery_date", nullable = true)
     private LocalDate deliveryDate;
 
     @Column(name = "delivery_status", nullable = false, length = 64)
@@ -90,6 +96,8 @@ public class Order {
         this.orderDate = orderDate;
     }
 
+    @Size(min = 1,max = 254,message = "Provide from 1 to 254 characters!")
+    @Pattern(regexp="^[A-Za-z0-9_@./#&+!?,]*$", message = "Provided text contains invalid characters!")
     public String getAdditionalRemarks() {
         return additionalRemarks;
     }

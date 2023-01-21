@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+//@ControllerAdvice
 @org.springframework.stereotype.Controller
 public class ProductController {
 
@@ -75,7 +75,6 @@ public class ProductController {
         } else if(Integer.valueOf(page) < 1){
             page="1";
         } else if(Integer.valueOf(page) > maxPage){
-            System.out.println("LALALLA"+page+"llala"+maxPage);
             page= String.valueOf(maxPage);
         }
 
@@ -92,13 +91,7 @@ public class ProductController {
             nextPage = Integer.valueOf(page)+1;
             previousPage = Integer.valueOf(page)-1;
         }
-//        System.out.println(products.size()-Integer.valueOf(count));
 
-//        int limit = products.size()-Integer.valueOf(count);
-//
-//        for(int i = 0; i<limit; i++){
-//            products.remove(products.size()-1);
-//        }
         products = getPage(products, Integer.valueOf(page), Integer.valueOf(count));
 
         products = sortProducts(products, sort);
@@ -133,8 +126,8 @@ public class ProductController {
         if(sort.contains("name")){
             comparator = Comparator.comparing(Product::getName, String.CASE_INSENSITIVE_ORDER);
         }
-        if(sort.contains("name") && sort.contains(("price"))){
-            comparator = Comparator.comparing(Product::getName, String.CASE_INSENSITIVE_ORDER).thenComparing(Product::getPrice);
+        if(sort.contains("price")){
+            comparator = Comparator.comparing(Product::getPrice);
         }
 
         return products.stream().sorted(comparator).collect(Collectors.toList());
